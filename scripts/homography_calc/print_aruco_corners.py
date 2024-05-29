@@ -1,6 +1,6 @@
 import cv2
 import cv2.aruco as aruco
-from homography_utils import OpencvCam
+from HomographyUtils import OpencvCam
 
 
 def main():

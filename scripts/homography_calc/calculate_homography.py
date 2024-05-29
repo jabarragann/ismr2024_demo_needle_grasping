@@ -1,15 +1,26 @@
 import cv2
 import cv2.aruco as aruco
 import numpy as np
-from homography_utils import OpencvCam, ArucoDetector
-from homography_utils import read_board_config
+from HomographyUtils import OpencvCam, ArucoDetector
+from HomographyUtils import read_board_config
+from RosCamera import RosCamera
+import rospy
 
 
 def main():
     aruco_detector = ArucoDetector()
-    cam = OpencvCam()
-    frame = cam.get_frame()
-    cam.close()
+
+    # # Opencv Cam
+    # cam = OpencvCam()
+    # frame = cam.get_frame()
+    # cam.close()
+
+    # Ros Cam
+    rospy.init_node("aruco_detector")
+    cam = RosCamera()
+    frame = cam.wait_until_first_img()
+    mtx = cam.camera_instrinsic
+    dist = cam.camera_distortion
 
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
@@ -19,8 +30,8 @@ def main():
     corners_pixel_space = aruco_detector.get_corners_dict()
     corners_world_space = read_board_config("./board_config_files/marker_board1.yaml")
 
-    pts_src = []
-    pts_dst = []
+    pts_src = []  # Points in pixel space
+    pts_dst = []  # Points in world space
 
     for key, item in corners_world_space.items():
         pts_dst.append(item)
@@ -29,7 +40,13 @@ def main():
     pts_src = np.concatenate(pts_src, axis=1).squeeze()
     pts_dst = np.concatenate(pts_dst, axis=1).squeeze()
 
-    h, status = cv2.findHomography(pts_src, pts_dst)
+    # The function cv2.undistortPoints() will not generate correct results.
+    # You need to use cv2.undistortImagePoints() instead.
+    pts_src_undist = cv2.undistortImagePoints(pts_src, mtx, dist).squeeze()
+
+    # Using undistorted image points should lead to a more accurate homography
+    # h, status = cv2.findHomography(pts_src, pts_dst) 
+    h, status = cv2.findHomography(pts_src_undist, pts_dst)
 
     ## Calculate the homography error
     pts_src_homogeneous = np.concatenate(
@@ -53,7 +70,7 @@ def main():
     #     )
     # )
 
-    # # Optionally, display the frame with detected markers for visual confirmation
+    # Optionally, display the frame with detected markers for visual confirmation
     # frame_with_markers = aruco.drawDetectedMarkers(frame, corners, ids)
     # cv2.imshow("Frame with ArUco markers", frame_with_markers)
     # cv2.waitKey(0)
