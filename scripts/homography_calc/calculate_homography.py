@@ -42,11 +42,11 @@ def main():
 
     # The function cv2.undistortPoints() will not generate correct results.
     # You need to use cv2.undistortImagePoints() instead.
-    pts_src_undist = cv2.undistortImagePoints(pts_src, mtx, dist).squeeze()
+    # pts_src_undist = cv2.undistortImagePoints(pts_src, mtx, dist).squeeze()
 
     # Using undistorted image points should lead to a more accurate homography
-    # h, status = cv2.findHomography(pts_src, pts_dst) 
-    h, status = cv2.findHomography(pts_src_undist, pts_dst)
+    h, status = cv2.findHomography(pts_src, pts_dst) 
+    # h, status = cv2.findHomography(pts_src_undist, pts_dst)
 
     ## Calculate the homography error
     pts_src_homogeneous = np.concatenate(
@@ -71,10 +71,10 @@ def main():
     # )
 
     # Optionally, display the frame with detected markers for visual confirmation
-    # frame_with_markers = aruco.drawDetectedMarkers(frame, corners, ids)
-    # cv2.imshow("Frame with ArUco markers", frame_with_markers)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
+    frame_with_markers = aruco.drawDetectedMarkers(frame, corners, ids)
+    cv2.imshow("Frame with ArUco markers", frame_with_markers)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
 
 if __name__ == "__main__":

@@ -5,6 +5,7 @@ from pathlib import Path
 from dataclasses import dataclass, field
 import cv2
 from cv2 import aruco
+from packaging import version
 
 
 @dataclass
@@ -38,8 +39,12 @@ class ArucoDetector:
     current_rejected: Tuple[np.ndarray] = field(default=None, init=False)
 
     def __post_init__(self):
-        self.aruco_dict = aruco.getPredefinedDictionary(aruco.DICT_4X4_250)
-        self.parameters = aruco.DetectorParameters()
+        if version.parse(cv2.__version__) >= version.parse("4.7.0"):
+            self.aruco_dict = aruco.getPredefinedDictionary(aruco.DICT_6X6_250)
+            self.parameters = aruco.DetectorParameters()
+        else:
+            self.aruco_dict = aruco.Dictionary_get(aruco.DICT_6X6_250)
+            self.parameters = aruco.DetectorParameters_create()
 
     def detect_markers(self, gray: np.ndarray):
         corners, ids, rejectedImgPoints = aruco.detectMarkers(

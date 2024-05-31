@@ -27,7 +27,7 @@ class OpencvWindow:
 
 @dataclass
 class RosCamera:
-    namespace: str = field(default="/depstech/")
+    namespace: str = field(default="/realsense/")
     display_img: bool = False
     image_sub: rospy.Subscriber = None
     img: np.ndarray = field(init=False, default=None)
@@ -36,8 +36,8 @@ class RosCamera:
     camera_frame: str = field(init=False, default=None)
 
     def __post_init__(self):
-        self.image_topic = self.namespace + "image_raw"
-        # self.image_topic = self.namespace + "image_rect_color"
+        # self.image_topic = self.namespace + "image_raw"
+        self.image_topic = self.namespace + "image_rect_color"
         self.camera_info_topic = self.namespace + "camera_info"
         self.image_sub = rospy.Subscriber(self.image_topic, Image, self._image_callback)
         self.cv_bridge = CvBridge()
