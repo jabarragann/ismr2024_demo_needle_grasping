@@ -67,5 +67,7 @@ def main():
     # cv2.waitKey(0)
     # cv2.destroyAllWindows()
 
+    # TODO: Send point to camera frame, reproject to img and measure reprojection error.
+
 if __name__ == "__main__":
     main()
