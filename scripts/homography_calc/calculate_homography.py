@@ -28,7 +28,7 @@ def main():
     corners, ids, rejectedImgPoints = aruco_detector.get_last_detected_markers()
 
     corners_pixel_space = aruco_detector.get_corners_dict()
-    corners_world_space = read_board_config("./board_config_files/marker_board1.yaml")
+    corners_world_space = read_board_config("./board_config_files/marker_board2.yaml")
 
     pts_src = []  # Points in pixel space
     pts_dst = []  # Points in world space
@@ -60,15 +60,17 @@ def main():
     mean_error = np.mean(residual_error) * 1000
     std_error = np.std(residual_error) * 1000
     print(f"Homography error: {mean_error:.4f} \u00b1 {std_error:.3f} mm")
-
-    # print("Predicted points")
-    # print(np.array2string(pred * 1000, separator=",", precision=3, suppress_small=True))
-    # print("ground truth points")
-    # print(
-    #     np.array2string(
-    #         pts_dst.T * 1000, separator=",", precision=3, suppress_small=True
-    #     )
-    # )
+    
+    print("residual error")
+    print(residual_error * 1000)
+    print("Predicted points")
+    print(np.array2string(pred * 1000, separator=",", precision=3, suppress_small=True))
+    print("ground truth points")
+    print(
+        np.array2string(
+            pts_dst.T * 1000, separator=",", precision=3, suppress_small=True
+        )
+    )
 
     # Optionally, display the frame with detected markers for visual confirmation
     frame_with_markers = aruco.drawDetectedMarkers(frame, corners, ids)
