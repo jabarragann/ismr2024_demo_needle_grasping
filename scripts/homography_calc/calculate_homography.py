@@ -78,6 +78,8 @@ def main():
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
+    np.save("homography.npy", h)
+
 
 if __name__ == "__main__":
     main()
